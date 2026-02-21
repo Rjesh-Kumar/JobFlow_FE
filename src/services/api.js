@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://job-flow-be.vercel.app/api';
 
 const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true,  // Comment out for now if CORS issues
+  // withCredentials: true,  // ⬅️ Comment out for production
   headers: {
     'Content-Type': 'application/json',
   },
