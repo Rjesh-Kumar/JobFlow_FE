@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { jobApi } from '../services/api';
@@ -32,8 +32,7 @@ const EditJobPage = () => {
     }
   }, []);
 
-
-  const fetchJob = useCallback(async () => {
+  const fetchJob = async () => {
     try {
       const response = await jobApi.getJobById(id);
       setFormData(response.data);
@@ -41,14 +40,8 @@ const EditJobPage = () => {
       toast.error('Failed to fetch job details');
       navigate('/');
     }
-  }, [id, navigate]);  
+  };
 
-  useEffect(() => {
-    if (!location.state?.job) {
-      fetchJob();
-    }
-  }, [location.state?.job, fetchJob]);  
-  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
