@@ -4,7 +4,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'https://job-flow-be.vercel.app
 
 const api = axios.create({
   baseURL: API_URL,
-  // withCredentials: true,  // Comment out for now if CORS issues
+  withCredentials: true,  // Comment out for now if CORS issues
   headers: {
     'Content-Type': 'application/json',
   },
