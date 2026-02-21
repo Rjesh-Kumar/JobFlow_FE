@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Card, ListGroup, Spinner, Alert, Button, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { jobApi } from '../services/api';
@@ -11,11 +11,7 @@ const JobDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchJobDetails();
-  }, [id]);
-
-  const fetchJobDetails = async () => {
+  const fetchJobDetails = useCallback(async () => {
     try {
       setLoading(true);
       const response = await jobApi.getJobById(id);
@@ -27,7 +23,11 @@ const JobDetailsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]); // Added id as dependency
+
+  useEffect(() => {
+    fetchJobDetails();
+  }, [fetchJobDetails]); // Added fetchJobDetails as dependency
 
   const handleEdit = () => {
     navigate(`/edit-job/${id}`, { state: { job } });
@@ -64,7 +64,10 @@ const JobDetailsPage = () => {
     );
   }
 
-  const qualifications = job.qualifications.split('\n').filter(q => q.trim());
+  // Safe check for qualifications
+  const qualifications = job.qualifications 
+    ? job.qualifications.split('\n').filter(q => q && q.trim()) 
+    : [];
 
   return (
     <Container className="py-4">
@@ -107,7 +110,7 @@ const JobDetailsPage = () => {
               <strong>Location:</strong> {job.location}
             </ListGroup.Item>
             <ListGroup.Item>
-              <strong>Salary:</strong> ${job.salary.toLocaleString()}
+              <strong>Salary:</strong> ${job.salary?.toLocaleString()}
             </ListGroup.Item>
             <ListGroup.Item>
               <strong>Job Type:</strong> {job.jobType}

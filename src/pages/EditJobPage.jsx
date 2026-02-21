@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { jobApi } from '../services/api';
@@ -26,13 +26,7 @@ const EditJobPage = () => {
     'Part-time (Remote)'
   ];
 
-  useEffect(() => {
-    if (!location.state?.job) {
-      fetchJob();
-    }
-  }, []);
-
-  const fetchJob = async () => {
+  const fetchJob = useCallback(async () => {
     try {
       const response = await jobApi.getJobById(id);
       setFormData(response.data);
@@ -40,7 +34,13 @@ const EditJobPage = () => {
       toast.error('Failed to fetch job details');
       navigate('/');
     }
-  };
+  }, [id, navigate]); // Added dependencies
+
+  useEffect(() => {
+    if (!location.state?.job) {
+      fetchJob();
+    }
+  }, [location.state?.job, fetchJob]); // Added proper dependencies
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,7 +70,8 @@ const EditJobPage = () => {
       toast.success('Job updated successfully!');
       navigate(`/job/${id}`);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update job');
+      const errorMessage = err.response?.data?.message || 'Failed to update job';
+      toast.error(errorMessage);
     }
   };
 
