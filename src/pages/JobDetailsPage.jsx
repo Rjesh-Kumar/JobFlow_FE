@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Card, ListGroup, Spinner, Alert, Button, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { jobApi } from '../services/api';
@@ -15,7 +15,8 @@ const JobDetailsPage = () => {
     fetchJobDetails();
   }, [id]);
 
-  const fetchJobDetails = async () => {
+  
+  const fetchJobDetails = useCallback(async () => {
     try {
       setLoading(true);
       const response = await jobApi.getJobById(id);
@@ -27,7 +28,11 @@ const JobDetailsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);  
+
+  useEffect(() => {
+    fetchJobDetails();
+  }, [fetchJobDetails]);  
 
   const handleEdit = () => {
     navigate(`/edit-job/${id}`, { state: { job } });
